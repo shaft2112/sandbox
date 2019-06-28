@@ -104,3 +104,37 @@ if(HighscoreEntry.score != obj.score){
   return false
 }
 return true;
+
+//4.2 a)
+public void addEntry(HighscoreEntry entry){
+  highscores.add(entry);
+  HighscoreEntry helper = new HighscoreEntry(null, null, null);
+  for (int i; i <= highscores.length(); i++){
+    for int j; j <= highscores.length(); j++){
+      if(highscores[i].compareTo(highscores[j]) < 0){
+        //stuff
+        helper = highscores[j];
+        highscores[j] = highscores[j+1];
+        highscores[j+1] = helper;
+        }
+      }
+    }
+    if(highscores.length() => 10){
+      highscores = Arrays.copyOf(highscores, 9);
+    }
+  }
+
+
+  public void saveToFile(String fileName){
+    if(highscores == null){
+      throw new IllegalArgumentException("No Highscore available! =(")
+    }
+    StringBuilder builder = new StringBuilder();
+    for (int i; i <= highscores.length(); i++){
+    builder.append(highscores[i].date.toString());
+    builder.append(highscores[i].score.toString());
+    builder.append(highscores[i].duration.toString());
+    builder.append(System.lineSeperator());
+    }
+    writeFileTo(fileName, builder);
+  }
