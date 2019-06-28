@@ -109,8 +109,10 @@ return true;
 public void addEntry(HighscoreEntry entry){
   highscores.add(entry);
   HighscoreEntry helper = new HighscoreEntry(null, null, null);
-  for (int i; i <= highscores.length(); i++){
-    for int j; j <= highscores.length(); j++){
+  for (int i = 0; i <= highscores.length(); i++){
+    for (int j = 0; j <= highscores.length(); j++){
+      //maybe use list.get(i) and so on
+      //https://stackoverflow.com/questions/8121176/java-sort-array-list-using-bubblesort
       if(highscores[i].compareTo(highscores[j]) < 0){
         //stuff
         helper = highscores[j];
@@ -130,7 +132,7 @@ public void addEntry(HighscoreEntry entry){
       throw new IllegalArgumentException("No Highscore available! =(")
     }
     StringBuilder builder = new StringBuilder();
-    for (int i; i <= highscores.length(); i++){
+    for (int i = 0; i <= highscores.length(); i++){
     builder.append(highscores[i].date.toString());
     builder.append(highscores[i].score.toString());
     builder.append(highscores[i].duration.toString());
@@ -138,3 +140,63 @@ public void addEntry(HighscoreEntry entry){
     }
     writeFileTo(fileName, builder);
   }
+
+
+//5.1 c)
+  private static List<Token> findTokensWithType(final IToken token, final Grid grid){
+    List<Token> returnList;
+    for (int i = 0; i <= grid.length(); i++){
+      if(grid[i].value == token.value){
+        if(grid[i].tokenState != TokenState.SOLVED){
+          returnList.add(grid[i]);
+        }
+      }
+    }
+    return Collections.shuffle(returnList);
+  }
+
+//5.1 d
+  public static void solvePair(final Grid grid){
+    if(isCheatPossible(grid, 0)){
+      List<Token> tokenPair = findValidTokens(grid);
+      deselectTokens();
+      if(tokenPair.length == 1){
+        tokenPair[0].setTokenState(TokenState.CLICKED);
+        tokenPair[1].setTokenState(TokenState.CLICKED);
+        grid.updateScore(-5);
+      }
+      grid.updateScore(-20);
+    }
+  }
+
+public static void findPartner(final Grid grid){
+  if(!(selectedTokenOne.TokenState == TokenState.CLICKED && selectedTokenTwo.TokenState == TokenState.CLICKED ||
+  selectedTokenOne.TokenState == TokenState.DEFAULT && selectedTokenTwo.TokenState == TokenState.DEFAULT)){
+    if(isCheatPossible(grid, 2)){
+      grid.updateScore(-10);
+      IToken single;
+      if(selectedTokenOne.TokenState == TokenState.CLICKED){
+        single = selectedTokenOne;
+      } else {
+        single = selectedTokenTwo;
+      }
+      List<Token> matchingPartners = findTokensWithType(single, grid);
+      for(int i = 0; i =< matchingPartners.length(); i++){
+        if(solvable(single, matchingPartners[i], grid)){
+          selectedTokenOne = single;
+          selectedTokenTwo = matchingPartners[i];
+          break;
+        } else {
+          selectedTokenOne = single;
+          selectedTokenTwo = matchingPartners[i];
+        }
+      }
+      if(!(solvable(selectedTokenOne, selectedTokenTwo, grid))){
+        grid.updateScore(-1);
+      }
+      selectedTokenOne.setTokenState(TokenState.CLICKED);
+      selectedTokenTwo.setTokenState(TokenState.CLICKED);
+      grid.updateScore(-5);
+    }
+  }
+}
